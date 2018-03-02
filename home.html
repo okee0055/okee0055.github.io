@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="assignment1_style.css"/>
+		<meta charset="utf-8"/>    
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		
+		<title>To-Do List</title>
+	</head>
+	<body>
+		<div id="nav" class="background_color text_color">
+			<div class="nav_item add_task_btn" onclick="drop_menu('task_form')">Add Item</div>
+				<div id="task_form" class="add_task_form task_form_in">
+					Category:<br>
+					<select class="task_form_in" id="category_input" required>
+						<option value="Work">Work</option>
+						<option value="School">School</option>
+						<option value="Chore">Chore</option>
+						<option value="Personal">Personal</option>
+					</select><br><br>
+					Due Date:<br>
+					<input class="task_form_in" type="date" name="due_date" id="due_date_input"/><br>
+					<input class="task_form_in" type="time" name="due_time" id="due_time_input" value="12:00"/><br><br>
+					Description:<br>
+					<textarea class="task_form_in" id="description_input" placeholder="Description of task"></textarea><br>
+					<input class="task_form_in" type="button" value="Add" onclick="add_task()"/>
+				</div>
+			<div class="nav_item manage_category_btn" onclick="drop_menu('category_form')">Manage Categories</div>
+				<div id="category_form" class="manage_category_form category_form_in">
+					<div id="category_list" class="category_form_in">Categories (press to remove)
+						<div id="Work_color" class="category_box category_form_in" style="border-color:red" onclick="remove_category('Work')">Work</div>
+						<div id="School_color" class="category_box category_form_in" style="border-color:blue" onclick="remove_category('School')">School</div>
+						<div id="Chore_color" class="category_box category_form_in" style="border-color:white" onclick="remove_category('Chore')">Chore</div>
+						<div id="Personal_color" class="category_box category_form_in" style="border-color:green" onclick="remove_category('Personal')">Personal</div>
+					</div>
+					<br>Add/Update Category:<br>
+					<input class="category_form_in" type="text" name="add_category" id="ac_input"
+						maxlength="20" placeholder="category name..."/><br>
+					<input class="category_form_in" type="color" name="select_color" id="ac_color_input"><br>
+					<input class="category_form_in" type="button" value="Submit" onclick="add_category()"/><br><br>
+				</div>
+<!--			<div class="nav_item" onclick="sort()">Sort</div>    -->
+			<div class="nav_item_link"><a class="nav_link" href="gallery.html"><div>To Gallery &#10132 </div></a></div>		
+		</div>
+		<div id="tasks" class="border_color text_color">
+			<div id="list_header" class="background_color">Your Tasks</div>
+				<div class="task_header background_color">
+					<table id="task_table" class="task_cont">
+						<tr id="task_table_header">
+							<td class="status"><b>Status</b></td>
+							<td class="category"><b>Category</b></td>
+							<td class="due_date"><b>Due Date</b></td>
+							<td class="description"><b>Description</b></td>
+							<td class="remove_task" style="border:none"></td>
+						</tr>
+						
+						
+						
+						
+					</table>
+				</div>
+		</div>
+		
+		<script>
+			var stored_task_list = localStorage.getItem("task_list");
+			var stored_category_options = localStorage.getItem("category_options");
+			var stored_category_colors = localStorage.getItem("category_colors");
+			var task_length = document.getElementById("task_table").childNodes.length;
+			var category_length = document.getElementById("category_input").childNodes.length;
+			if(!(stored_task_list === null)){
+				if(task_length <= 2 && stored_task_list.length > 0){
+					load_task_list();
+					console.log("loaded task list");
+				}
+			}
+			if(!(stored_category_options === null || stored_category_colors === null)){
+				console.log(category_length);
+				if(category_length <= 9 && stored_category_options.length > 0){
+					load_category_lists();
+					console.log("loaded categories");
+				}
+			}
+			function load_task_list(){
+				var task_table = document.getElementById("task_table");
+				task_table.innerHTML = stored_task_list;
+			}
+			function save_task_list(){
+				var task_list = document.getElementById("task_table");
+				window.localStorage.setItem("task_list", task_list.innerHTML);
+				console.log("task list state saved");
+			}
+			function load_category_lists(){
+				var category_options = document.getElementById("category_input");
+				category_options.innerHTML = stored_category_options;
+				var category_color_list = document.getElementById("category_list");
+				category_color_list.innerHTML = stored_category_colors;
+			}
+			function save_category_lists(){
+				var category_options = document.getElementById("category_input");
+				window.localStorage.setItem("category_options", category_options.innerHTML);
+				var category_color_list = document.getElementById("category_list");
+				window.localStorage.setItem("category_colors", category_color_list.innerHTML);
+				console.log("category lists state saved");
+			}
+			function add_category(){
+				var new_category = document.getElementById("ac_input").value.trim();
+				if(new_category != ""){
+					var new_cat_color = document.getElementById("ac_color_input").value;
+					var cat_list = document.getElementById("category_input").childNodes;
+					var flag = 1;
+					for (var i=0; i<cat_list.length; i++) {
+						if(cat_list[i].text == new_category){
+							flag = 0;
+							document.getElementById(new_category+"_color").style.borderColor = new_cat_color;
+							var cat_rows = document.getElementsByClassName(new_category+"_row");
+							for(var row=0; row<cat_rows.length; row++){
+								cat_rows[row].style.borderColor = new_cat_color;
+							}
+						}
+					}
+					if(flag == 1){
+						var option = "<option value=\""+new_category+"\">" + new_category + "</option>";
+						document.getElementById("category_input").insertAdjacentHTML('beforeend', option);
+						var item = "<div id=\""+new_category+"_color\" class=\"category_box category_form_in\" style=\"border-color:"+new_cat_color+"\" onclick=\"remove_category('"+new_category+"')\">"+new_category+"</div>";
+						document.getElementById("category_list").insertAdjacentHTML('beforeend', item);
+					}
+					console.log("category " + new_category + " added " + document.getElementById("category_input").childNodes.length);
+					save_category_lists();
+				}
+			}
+			function drop_menu(menu) {
+				document.getElementById(menu).classList.toggle("show");
+			}
+			window.onclick = function(event) {
+				if (!(event.target.matches('.task_form_in') || event.target.matches('.add_task_btn'))) {
+					var dropdowns = document.getElementsByClassName("add_task_form");
+					var i;
+					for (i = 0; i < dropdowns.length; i++) {
+						var openDropdown = dropdowns[i];
+						if (openDropdown.classList.contains('show')) {
+							openDropdown.classList.remove('show');
+						}
+					}
+				}
+				if (!(event.target.matches('.category_form_in') || event.target.matches('.manage_category_btn'))) {
+					var dropdowns = document.getElementsByClassName("manage_category_form");
+					var i;
+					for (i = 0; i < dropdowns.length; i++) {
+						var openDropdown = dropdowns[i];
+						if (openDropdown.classList.contains('show')) {
+							openDropdown.classList.remove('show');
+						}
+					}
+				}
+			}
+			function toggle_completed(check_box){
+				if(check_box.innerHTML == ""){
+					check_box.innerHTML = "&#10004";
+				}else{
+					check_box.innerHTML = "";
+				}
+				console.log("toggle completed");
+				save_task_list();
+			}
+			function add_task() {
+				var category, status, due_date, description;
+				category = document.getElementById("category_input").value;
+				due_date = document.getElementById("due_date_input").value;
+				due_time = document.getElementById("due_time_input").value;
+				description = document.getElementById("description_input").value;
+				
+				var time_ext = "AM";
+				var hour = parseInt(due_time.split(":")[0]);
+				var min = due_time.split(":")[1];
+				if(hour > 12){
+					time_ext = "PM";
+					hour = hour - 12;
+				}
+				var time = hour + ":" + min + " " + time_ext;
+				
+				var cat_color = document.getElementById(category+"_color").style.borderColor;
+				
+				var task = "<tr class=\"task_table_row "+category+"_row\" style=\"border-color:"+cat_color+"\">";
+				task += "<td class=\"status\"><div class=\"check_box background_color\" onclick=\"toggle_completed(event.target)\"></div></td>";
+				task += "<td class=\"category\">" + category + "</td>";
+				task += "<td class=\"due_date\">" + due_date + " at " + time + "</td>";
+				task += "<td class=\"description\">" + description + "</td>";
+				task += "<td class=\"remove_task\"><div class=\"x_box\" onclick=\"remove_task(event.target)\"><b>X</b></div></td></tr>";
+				document.getElementById("task_table").insertAdjacentHTML('beforeend', task);
+				
+				console.log("Task ADDED!");
+				save_task_list();
+			}
+			function sort(){
+				console.log("SORT!");
+			}
+			function remove_task(x){
+				if(confirm("Are you sure you want to remove the task your list?")){
+					var row = x.parentNode.parentNode.parentNode.parentNode;
+					var table = row.parentNode;
+					table.removeChild(row);
+					console.log("removed row " + row + "from table");
+				}else{
+					console.log("nothing removed from table");
+				}
+				save_task_list();
+			}
+			function remove_category(category){
+				if(confirm("Are you sure you want to remove this category from the list?")){
+					var op_target, c_target;
+					var option_list = document.getElementById("category_input").childNodes;
+					for(var option=0; option<option_list.length; option++){
+						if(option_list[option].value === category){
+							op_target = option_list[option];
+						}
+					}
+					document.getElementById("category_input").removeChild(op_target);
+					document.getElementById("category_list").removeChild(document.getElementById(category+"_color"));
+					save_category_lists();
+				/*
+					if(confirm("Press Okay/Yes to remove all tasks of category \""+this_cat+"\"from the list. Press Cancel/No to leave them")){
+						var table = document.getElementById("task_table");
+						var rows = document.getElementsByClassName(category+"_row");
+						for(var row=0; row<rows.length; i++){
+							table.removeChild(rows[row]);
+						}
+					}
+				*/
+				}
+			}
+		</script>
+	</body>
+</html>
