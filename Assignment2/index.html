@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!--jQuery-->
+      <!--From Google's CDN-->
+      <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+    <!--Some other way-->
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous">
+    </script>
+
+
+    <!--Bootstrap 4 style sheet-->
+    <link rel="stylesheet" href="https://bootswatch.com/4/slate/bootstrap.min.css">
+
+    <title>Air Quality</title>
+
+    <!--Google Map Styling-->
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+
+    <!--Google Maps Source and libraries-->
+    <script defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBjz4rvcBvjpwOsIE5GFgoEi5sxGBbqM2Y&libraries=drawing,places,geometry,visualization&callback=initMap">
+    </script>
+
+
+
+
+</head>
+<body>
+
+<!--Nav Bar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">Air Quality</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!--Map Container-->
+<div class="jumbotron" id="main-map">
+    <div class="container col-md-8">
+
+        <!--Title and search bar-->
+        <h3 class="display-5">Air Quality Map</h3>
+        <!-- <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" id="searchBox">
+            </input>
+            <button class="btn btn-secondary my-2 my-sm-0" type="button" id="searchButton">Search</button>
+        </form> -->
+        <!-- <button id="JSON-BTN">JSON-BTN</button> -->
+        <input type="text" class="form-control mr-sm-2" id="searchBox">
+
+        <!--Map itself-->
+        <div id="map" style="margin-top: 2%;"></div>
+    </div>
+</div>
+<div class="jumbotron" id="table-container">
+    <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">AQ</th>
+            <th scope="col">Coordinate</th>
+            <th scope="col">Measurment</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    var searchButton;
+    var input;
+    var autocomplete;
+    var map;
+
+    //google API callback function
+    function initMap() {
+        var location = {lat: 45.000, lng: -93.000};
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 4,
+            center: location
+        });
+        initVariables();
+    }
+
+    function initVariables() {
+        //searchButton = $("#searchButton");
+        input = document.getElementById('searchBox');
+        //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        autocomplete = new google.maps.places.Autocomplete(input);
+
+        /*
+        * Autocomplete Library
+        * /https://developers.google.com/maps/documentation/javascript/places-autocomplete
+        *
+        * Autocomplete Class
+        * https://developers.google.com/maps/documentation/javascript/reference/3/#Autocomplete
+        *
+        * Map Class
+        * https://developers.google.com/maps/documentation/javascript/reference/3/
+        *
+        * Events
+        * https://developers.google.com/maps/documentation/javascript/events
+        */
+
+        //For searching a location using the autocomplete box
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var location = autocomplete.getPlace();
+            console.log(location);
+            var lat = location.geometry.location.lat();
+            var long = location.geometry.location.lng();
+            map.setCenter(new google.maps.LatLng(lat, long));
+
+            console.log("Lat: " +  lat);
+            console.log("Long: " + long);
+
+        });
+        //For updating the autocomplete box when user drags map around
+        google.maps.event.addListener(map, 'center_changed', function () {
+            var place = map.getCenter();
+            //**parameters for the openAQ GET request!
+            //    ***at first I though it was not working becuase the default
+            //       radius was so small that no measuments were being taken
+            var params = {coordinates: place.lat()+","+place.lng(), radius: 50000, limit: 10};
+            // console.log(place.lat()+","+place.lng());
+            // console.log("Map was dragged. New Center: " +  place);
+            $("#searchBox").attr("placeholder", place.lat() + " " + place.lng());
+            //Getting measurments from openAQ and updating the table
+            $.getJSON("https://api.openaq.org/v1/measurements", params,
+             (data, err)=>{
+                console.log(data);
+                $(".data-row").remove();
+                $.each(data.results, (i, result)=>{
+                  //for each result update the table with it's info
+                  //Ex to access the fields in the "result"
+                  // console.log(i+":: Lat: "+result.coordinates.latitude+", Lng: "+result.coordinates.longitude);
+                  // Make this...
+                  // <tr>
+                  //   <th scope="row">Ex</th>
+                  //   <td>lat: 0,0</td>
+                  //   <td>CO2: 23dps</td>
+                  //   <td>2222-22-2:2:22</td>
+                  // </tr>
+                  //...
+                  var table_row = "<tr class=\"data-row\">";
+                      table_row += "<th scope=\"row\">"+i+"</th>"
+                      //coordinate: coord.lat, coord.lng
+                      table_row += "<td>"+result.coordinates.latitude+", "+result.coordinates.longitude+"</td>"
+                      //measurment: "parameter: value unit"
+                      table_row += "<td>"+result.parameter+": "+result.value+" "+result.unit+"</td>"
+                      //Date: date.local
+                      table_row += "<td>"+result.date.local+"</td>"
+                  table_row += "</tr>"
+                  //append to id table-body
+                  $("#table-body").append(table_row);
+                });
+            });
+        });
+        // $(document).ready(function(){
+        //     $("#JSON-BTN").click(function(){
+        //         $.getJSON("https://api.openaq.org/v1/measurements",
+        //           {
+        //             coordinates: "0,0"
+        //           },
+        //          (data, err)=>{
+        //             console.log(data);
+        //             //console.error(err);
+        //         });
+        //     });
+        // });
+
+
+    }
+
+</script>
+
+
+</body>
+</html>
