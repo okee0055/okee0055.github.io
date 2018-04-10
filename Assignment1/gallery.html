@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="assignment1_style.css"/>
+		<meta charset="utf-8"/>    
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		
+		
+		<style>
+		/*
+			These are styles from w3 schools demo on lightboxes that were used here.
+			
+			demo: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_lightbox
+		
+		*/
+
+			* {
+			  box-sizing: border-box;
+			}
+
+			/* The Modal (background) */
+			.modal {
+			  display: none;
+			  position: fixed;
+			  z-index: 1;
+			  padding-top: 100px;
+			  left: 0;
+			  top: 0;
+			  width: 100%;
+			  height: 100%;
+			  overflow: auto;
+			  background-color: black;
+			}
+
+			/* Modal Content */
+			.modal-content {
+			  position: relative;
+			  background-color: #fefefe;
+			  margin: auto;
+			  padding: 0;
+			  width: 40%;
+			  max-width: 1200px;
+			}
+
+			/* The Close Button */
+			.close {
+			  color: white;
+			  position: absolute;
+			  top: 50px;
+			  right: 25px;
+			  font-size: 35px;
+			  font-weight: bold;
+			}
+
+			.close:hover,
+			.close:focus {
+			  color: #999;
+			  text-decoration: none;
+			  cursor: pointer;
+			}
+
+			.mySlides {
+			  display: none;
+			}
+
+			.cursor {
+			  cursor: pointer
+			}
+
+			/* Next & previous buttons */
+			.prev,
+			.next {
+			  cursor: pointer;
+			  position: absolute;
+			  top: 50%;
+			  width: auto;
+			  padding: 16px;
+			  margin-top: -50px;
+			  /*color: white; original w3 color*/
+			  color: grey; /* color chosen by be to fit images better */
+			  font-weight: bold;
+			  font-size: 20px;
+			  transition: 0.6s ease;
+			  border-radius: 0 3px 3px 0;
+			  user-select: none;
+			  -webkit-user-select: none;
+			}
+
+			/* Position the "next button" to the right */
+			.next {
+			  right: 0;
+			  border-radius: 3px 0 0 3px;
+			}
+
+			/* On hover, add a black background color with a little bit see-through */
+			.prev:hover,
+			.next:hover {
+			  background-color: rgba(0, 0, 0, 0.8);
+			}
+
+			/* Number text (1/3 etc) */
+			.numbertext {
+			  /*color: #f2f2f2; original w3 color*/
+
+			  font-size: 12px;
+			  padding: 8px 12px;
+			  position: absolute;
+			  top: 0;
+			}
+
+			img {
+			  margin-bottom: -4px;
+			}
+
+			.caption-container {
+			  text-align: center;
+			  background-color: black;
+			  padding: 2px 16px;
+			  color: white;
+			}
+
+			.demo {
+			  opacity: 0.6;
+			}
+
+			.active,
+			.demo:hover {
+			  opacity: 1;
+			}
+		</style>		
+		
+		<title>Inspirational Gallery</title>
+	</head>
+	<body>
+		<div id="nav" class="background_color text_color"><div class="nav_item_link"><a class="nav_link" href="home.html"><div>To Home &#10132 </div></a></div></div>
+		
+		<div id="gallery_container" class="border_color text_color">
+			<div id="gallery_header" class="background_color">Gallery</div>
+				<div id="gallery">
+					<img class="gallery_img cursor" src="trash.jpg" onclick="openModal();currentSlide(1)">
+					<img class="gallery_img cursor" src="bird_mountain.jpg" onclick="openModal();currentSlide(2)">
+					<img class="gallery_img cursor" src="puppy.jpg" onclick="openModal();currentSlide(3)">
+					<img class="gallery_img cursor" src="rock_wall.jpg" onclick="openModal();currentSlide(4)">
+					<img class="gallery_img cursor" src="tower.jpg" onclick="openModal();currentSlide(5)">	
+					<img class="gallery_img cursor" src="dew_wheat.jpg" onclick="openModal();currentSlide(6)">	
+					<img class="gallery_img cursor" src="above_clouds.jpg" onclick="openModal();currentSlide(7)">	
+					<img class="gallery_img cursor" src="mountains_and_sky_snow.jpg" onclick="openModal();currentSlide(8)">	
+					<img class="gallery_img cursor" src="mountains_and_sky_grass.jpg" onclick="openModal();currentSlide(9)">	
+					<img class="gallery_img cursor" src="empty_bench.jpg" onclick="openModal();currentSlide(10)">	
+					<img class="gallery_img cursor" src="through_the_desert.jpg" onclick="openModal();currentSlide(11)">	
+					<img class="gallery_img cursor" src="glacier.jpg" onclick="openModal();currentSlide(12)">	
+					<img class="gallery_img cursor" src="cliff_and_ocean.jpg" onclick="openModal();currentSlide(13)">	
+					<img class="gallery_img cursor" src="cut_trees.jpg" onclick="openModal();currentSlide(14)">	
+					<img class="gallery_img cursor" src="tree_stump.jpg" onclick="openModal();currentSlide(15)">	
+					<img class="gallery_img cursor" src="firewood.jpg" onclick="openModal();currentSlide(16)">	
+					<img class="gallery_img cursor" src="strike.jpg" onclick="openModal();currentSlide(17)">	
+					<img class="gallery_img cursor" src="time_lapse_road.jpg" onclick="openModal();currentSlide(18)">	
+					<img class="gallery_img cursor" src="dock.jpg" onclick="openModal();currentSlide(19)">	
+					<img class="gallery_img cursor" src="winter_forest.jpg" onclick="openModal();currentSlide(20)">
+				</div>
+			</div>
+
+			
+			<!-- This slide structure is taken from the w3 schools demo on lightboxes: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_lightbox -->
+		<div id="myModal" class="modal">
+		  <span class="close cursor" onclick="closeModal()">&times;</span>
+		  <div class="modal-content">
+
+			<div class="mySlides">
+			  <div class="numbertext">1 / 20</div>
+			  <img src="trash.jpg" style="width:100%">
+			</div>
+
+			<div class="mySlides">
+			  <div class="numbertext">2 / 20</div>
+			  <img src="bird_mountain.jpg" style="width:100%">
+			</div>
+
+			<div class="mySlides">
+			  <div class="numbertext">3 / 20</div>
+			  <img src="puppy.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">4 / 20</div>
+			  <img src="rock_wall.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">5 / 20</div>
+			  <img src="tower.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">6 / 20</div>
+			  <img src="dew_wheat.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">7 / 20</div>
+			  <img src="above_clouds.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">8/ 20</div>
+			  <img src="mountains_and_sky_snow.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">9 / 20</div>
+			  <img src="mountains_and_sky_grass.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">10 / 20</div>
+			  <img src="empty_bench.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">11 / 20</div>
+			  <img src="through_the_desert.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">12 / 20</div>
+			  <img src="glacier.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">13 / 20</div>
+			  <img src="cliff_and_ocean.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">14 / 20</div>
+			  <img src="cut_trees.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">15 / 20</div>
+			  <img src="tree_stump.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">16 / 20</div>
+			  <img src="firewood.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">17 / 20</div>
+			  <img src="strike.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">18 / 20</div>
+			  <img src="time_lapse_road.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">19 / 20</div>
+			  <img src="dock.jpg" style="width:100%">
+			</div>
+			
+			<div class="mySlides">
+			  <div class="numbertext">20 / 20</div>
+			  <img src="winter_forest.jpg" style="width:100%">
+			</div>
+			
+			
+			
+			<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+			<a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+			<div class="caption-container">
+			  <p id="caption"></p>
+			</div>
+
+
+			<div id="demo_content">
+				  <img class="demo cursor" src="trash.jpg" style="width:100px" onclick="currentSlide(1)" alt="trash">
+				  <img class="demo cursor" src="bird_mountain.jpg" style="width:100px" onclick="currentSlide(2)" alt="bird_mountain">
+				  <img class="demo cursor" src="puppy.jpg" style="width:100px" onclick="currentSlide(3)" alt="puppy">
+				  <img class="demo cursor" src="rock_wall.jpg" style="width:100px" onclick="currentSlide(4)" alt="rock_wall">
+				  <img class="demo cursor" src="tower.jpg" style="width:100px" onclick="currentSlide(5)" alt="tower">
+				  <img class="demo cursor" src="dew_wheat.jpg" style="width:100px" onclick="currentSlide(6)" alt="dew_wheat">
+				  <img class="demo cursor" src="above_clouds.jpg" style="width:100px" onclick="currentSlide(7)" alt="above_clouds">
+				  <img class="demo cursor" src="mountains_and_sky_snow.jpg" style="width:100px" onclick="currentSlide(8)" alt="mountains_and_sky_snow">
+				  <img class="demo cursor" src="mountains_and_sky_grass.jpg" style="width:100px" onclick="currentSlide(9)" alt="mountains_and_sky_grass">
+				  <img class="demo cursor" src="empty_bench.jpg" style="width:100px" onclick="currentSlide(10)" alt="empty_bench">
+				  <img class="demo cursor" src="through_the_desert.jpg" style="width:100px" onclick="currentSlide(11)" alt="through_the_desert">
+				  <img class="demo cursor" src="glacier.jpg" style="width:100px" onclick="currentSlide(12)" alt="glacier">
+				  <img class="demo cursor" src="cliff_and_ocean.jpg" style="width:100px" onclick="currentSlide(13)" alt="cliff_and_ocean">
+				  <img class="demo cursor" src="cut_trees.jpg" style="width:100px" onclick="currentSlide(14)" alt="cut_trees">
+				  <img class="demo cursor" src="tree_stump.jpg" style="width:100px" onclick="currentSlide(15)" alt="tree_stump">
+				  <img class="demo cursor" src="firewood.jpg" style="width:100px" onclick="currentSlide(16)" alt="firewood">
+				  <img class="demo cursor" src="strike.jpg" style="width:100px" onclick="currentSlide(17)" alt="strike">
+				  <img class="demo cursor" src="time_lapse_road.jpg" style="width:100px" onclick="currentSlide(18)" alt="time_lapse_road">
+				  <img class="demo cursor" src="dock.jpg" style="width:100px" onclick="currentSlide(19)" alt="dock">
+				  <img class="demo cursor" src="winter_forest.jpg" style="width:100px" onclick="currentSlide(20)" alt="winter_forest">
+			</div>
+		  </div>
+		</div>
+		
+		
+		<script>
+		//script from w3 schoold demo: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_js_lightbox
+		
+			function openModal() {
+			  document.getElementById('myModal').style.display = "block";
+			}
+
+			function closeModal() {
+			  document.getElementById('myModal').style.display = "none";
+			}
+
+			var slideIndex = 1;
+			showSlides(slideIndex);
+
+			function plusSlides(n) {
+			  showSlides(slideIndex += n);
+			}
+
+			function currentSlide(n) {
+			  showSlides(slideIndex = n);
+			}
+
+			function showSlides(n) {
+			  var i;
+			  var slides = document.getElementsByClassName("mySlides");
+			  var dots = document.getElementsByClassName("demo");
+			  var captionText = document.getElementById("caption");
+			  if (n > slides.length) {slideIndex = 1}
+			  if (n < 1) {slideIndex = slides.length}
+			  for (i = 0; i < slides.length; i++) {
+				  slides[i].style.display = "none";
+			  }
+			  for (i = 0; i < dots.length; i++) {
+				  dots[i].className = dots[i].className.replace(" active", "");
+			  }
+			  slides[slideIndex-1].style.display = "block";
+			  dots[slideIndex-1].className += " active";
+			  captionText.innerHTML = dots[slideIndex-1].alt;
+			}
+		</script>
+	</body>
+</html>
