@@ -39,7 +39,7 @@ var server = http.createServer((req, res) => {
     }
 
     else if(req.method === 'POST'){
-        if(filename === 'subscribe'){
+        if(filename === 'query'){
             var form = new multiparty.Form();
             form.parse(req, (err, fields, files) =>  {
                 console.log(fields);
